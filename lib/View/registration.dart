@@ -20,7 +20,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.push(
                 context,
@@ -34,14 +34,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Image.asset(
                 'lib/image/deals_dray_logo.jpg',
                 width: 120,
                 height: 120,
               ),
-              SizedBox(height: 20),
-              Align(
+              const SizedBox(height: 20),
+              const Align(
                 alignment: Alignment.centerLeft,
               child: Text(
                 "Let's Begin!",
@@ -52,30 +52,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ),
               ),
-              SizedBox(height: 10),
-              Align(
+              const SizedBox(height: 10),
+              const Align(
                 alignment: Alignment.centerLeft,
               child: Text(
                 "Please enter your credentials to proceed",
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Your Email',
                   border: UnderlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   hintText: 'Create Password',
-                  border: UnderlineInputBorder(),
+                  border: const UnderlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -88,15 +88,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _referralController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Referral Code (Optional)',
                   border: UnderlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 180),
+              const SizedBox(height: 180),
 
               // Submit Button
               Align(
@@ -109,7 +109,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward,
                       color: Colors.white,
                       size: 24,

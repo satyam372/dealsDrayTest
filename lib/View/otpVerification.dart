@@ -28,7 +28,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
   }
 
   void _startTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_timerCountdown > 0) {
           _timerCountdown--;
@@ -58,7 +58,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.push(
               context,
@@ -75,7 +75,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
           children: [
             // Back button
             // Phone image
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Align(
               alignment: Alignment.centerLeft,
             child: Image.asset(
@@ -83,8 +83,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
               height: 100,
             ),
             ),
-            SizedBox(height: 20),
-            Align(
+            const SizedBox(height: 20),
+            const Align(
               alignment: Alignment.centerLeft,
             child: Text(
               "OTP Verification",
@@ -94,8 +94,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
               ),
             ),
             ),
-            SizedBox(height: 10),
-            Align(
+            const SizedBox(height: 10),
+            const Align(
               alignment: Alignment.centerLeft,
             child: Text(
               "We have sent a unique OTP number\nto your mobile 000000", // TODO:- Replace with actual phone number
@@ -103,22 +103,22 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> with Code
               style: TextStyle(fontSize: 16),
             ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             PinFieldAutoFill(
               codeLength: 4, // OTP length
               controller: otpController,
               decoration: UnderlineDecoration(
-                textStyle: TextStyle(fontSize: 20, color: Colors.black),
-                colorBuilder: FixedColorBuilder(Colors.black),
+                textStyle: const TextStyle(fontSize: 20, color: Colors.black),
+                colorBuilder: const FixedColorBuilder(Colors.black),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   "$minutes : $seconds",
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 TextButton(
                   onPressed: _isResendEnabled
