@@ -1,10 +1,13 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:deals_dray_test/Domain/login_send_otp.dart';
+import 'package:deals_dray_test/Api/login_send_otp.dart';
 import 'package:deals_dray_test/View/otpVerification.dart';
 import 'package:deals_dray_test/View/registration.dart';
 
+// TODO:Redesign the screen
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -12,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phonenumbercontroller = TextEditingController();
   bool _isButtonEnabled = false;
-  bool _isPhoneSelected = true;
+  final bool _isPhoneSelected = true;
   late Otp _otp;
 
   @override
@@ -32,15 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void _updateButtonState() {
     final textLength = _phonenumbercontroller.text.length;
     setState(() {
-      _isButtonEnabled = textLength == 10;
+      _isButtonEnabled = textLength == 14;
     });
   }
 
-  void _toggleSelection(bool isPhoneSelected) {
-    setState(() {
-      _isPhoneSelected = isPhoneSelected;
-    });
-  }
 
   void _handleOtpSent(int status) {
     if (status == 1) {
@@ -62,6 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
       "deviceId": androidInfo.id,
     };
     await _otp.sendOtp(data);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => OtpVerificationScreen()),
+    );
   }
 
   @override
@@ -84,46 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 200,
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _toggleSelection(true),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _isPhoneSelected ? Colors.red : Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                            'Phone',
-                            style: TextStyle(
-                              color: _isPhoneSelected ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _toggleSelection(false),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: !_isPhoneSelected ? Colors.red : Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                            'Email',
-                            style: TextStyle(
-                              color: !_isPhoneSelected ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
                 const SizedBox(height: 30),
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -140,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Please provide your phone number',
+                    'Please provide your Enrollment Number',
                     style: TextStyle(
                       fontSize: 13,
                     ),
@@ -153,9 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: _isPhoneSelected ? 'Phone' : 'Email',
                   ),
                   keyboardType: _isPhoneSelected
-                      ? TextInputType.phone
+                      ? TextInputType.text
                       : TextInputType.emailAddress,
-                  maxLength: _isPhoneSelected ? 10 : null,
+                  maxLength: _isPhoneSelected ? 14 : null,
                   textInputAction: TextInputAction.done,
                 ),
                 const SizedBox(height: 20),
@@ -168,14 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  onPressed: _isButtonEnabled ? _sendOtp : null,
+                  onPressed: _sendOtp,
                   child: const Text('Submit', style: TextStyle(fontSize: 18)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+                )])))));
   }
 }
