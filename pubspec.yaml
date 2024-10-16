@@ -20,6 +20,8 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.6.0-131.0.dev
+  sdk: '>=3.6.0-334.2.beta <4.0.0'
+  flutter: '>=3.27.0-1.0.pre.25'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -42,6 +44,7 @@ dependencies:
   dio: ^5.7.0
   network_info_plus: ^6.0.1
   permission_handler: ^11.3.1
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
