@@ -3,6 +3,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:screen_protector/screen_protector.dart';
+import 'package:deals_dray_test/Domain/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,11 +12,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  // TODO: Pass the users enroll no here
   String qrData = '';
   DateTime? lastGeneratedTime;
   bool isButtonLocked = false;
-  String rollNumber = "MITU21BTCS05";
 
   @override
   void initState() {
@@ -32,8 +31,12 @@ class HomeScreenState extends State<HomeScreen> {
     await ScreenProtector.preventScreenshotOn();
     DateTime currentTime = DateTime.now();
     String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(currentTime);
-    setState(() {
+    String? rollNumber = await getValue('auth-token');
+    if (rollNumber != null) {
       qrData = rollNumber + formattedTime;
+    }
+    setState(() {
+      qrData;
       lastGeneratedTime = currentTime;
       isButtonLocked = true;
     });
