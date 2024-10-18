@@ -31,7 +31,7 @@ class HomeScreenState extends State<HomeScreen> {
     await ScreenProtector.preventScreenshotOn();
     DateTime currentTime = DateTime.now();
     String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(currentTime);
-    String? rollNumber = await getValue('auth-token');
+    String? rollNumber = await getValue('Enroll-no');
     if (rollNumber != null) {
       qrData = rollNumber + formattedTime;
     }
