@@ -1,8 +1,5 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:deals_dray_test/Api/login_send_otp.dart';
-import 'package:deals_dray_test/View/otpVerification.dart';
-import 'package:deals_dray_test/View/registration.dart';
 import 'package:deals_dray_test/Api/cloud_services.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:deals_dray_test/View/homeScreen.dart';
