@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:deals_dray_test/View/Splash.dart';
+import 'package:deals_dray_test/View/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:SplashScreen(),
+      home:const SplashScreen(),
     );
   }
 }
