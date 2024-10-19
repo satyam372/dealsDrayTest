@@ -3,26 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:deals_dray_test/Api/login_send_otp.dart';
 import 'package:deals_dray_test/View/otpVerification.dart';
 import 'package:deals_dray_test/View/registration.dart';
+import 'package:deals_dray_test/Api/cloud_services.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:deals_dray_test/View/homeScreen.dart';
+import 'package:deals_dray_test/Domain/services.dart';
 
 // TODO:Redesign the screen
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phonenumbercontroller = TextEditingController();
   bool _isButtonEnabled = false;
   final bool _isPhoneSelected = true;
-  late Otp _otp;
+  late CloudServices _cloudServices;
 
   @override
   void initState() {
     super.initState();
     _phonenumbercontroller.addListener(_updateButtonState);
-    _otp = Otp(onOtpSent: _handleOtpSent);
+    _cloudServices = CloudServices();
   }
 
   @override
@@ -38,31 +41,29 @@ class _LoginScreenState extends State<LoginScreen> {
       _isButtonEnabled = textLength == 14;
     });
   }
-
-
-  void _handleOtpSent(int status) {
-    if (status == 1) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => OtpVerificationScreen()),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => RegistrationScreen()),
-      );
-    }
-  }
-
-  Future<void> _sendOtp() async {
+  // TODO:Shift the login to another file
+  Future<void> sendData() async {
+    final abc = encrypt.Key.fromSecureRandom(32);  // 32-byte AES key
+    final encrypter = encrypt.Encrypter(encrypt.AES(abc, mode: encrypt.AESMode.ecb));
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    final phonenumber = encrypter.encrypt(_phonenumbercontroller.text);  // No IV in ECB mode
+    final device = encrypter.encrypt(androidInfo.id);
     final Map<String, dynamic> data = {
-      "mobileNumber": _phonenumbercontroller.text,
-      "deviceId": androidInfo.id,
+      "enrollment_no": phonenumber.base64,
+      "device_id": device.base64,
+      "token": '',
+      "key": abc.base64,
     };
-    await _otp.sendOtp(data);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => OtpVerificationScreen()),
-    );
+    final res = await _cloudServices.generateToken(data);
+    if (res == true) {
+      await storeValue('Enroll-no', _phonenumbercontroller.text);
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    }
   }
 
   @override
@@ -130,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  onPressed: _sendOtp,
+                  onPressed: sendData,
                   child: const Text('Submit', style: TextStyle(fontSize: 18)),
                 )])))));
   }
