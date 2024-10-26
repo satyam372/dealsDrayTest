@@ -4,8 +4,8 @@ import 'package:deals_dray_test/Domain/services.dart';
 
 class CloudServices {
 
-  Future<bool> generateToken(Map<String, dynamic> data) async {
-    bool send = false;
+  Future<bool> findUser(Map<String, dynamic> data) async {
+    bool found = false;
     final dio = Dio();
     try {
       final response = await dio.post(
@@ -19,14 +19,15 @@ class CloudServices {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = response.data;
+        print(responseData);
         final token = responseData['token'];
         await storeValue('auth-token', token);
-        send = true;
+        found = true;
       }
     } catch (e) {
-      send = false;
+      found = false;
     }
-    return send;
+    return found;
   }
 
   Future<bool> validateToken(String data)async {
