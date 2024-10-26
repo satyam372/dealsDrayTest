@@ -5,7 +5,6 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:deals_dray_test/View/homeScreen.dart';
 import 'package:deals_dray_test/Domain/services.dart';
 
-// TODO:Redesign the screen
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -13,48 +12,48 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phonenumbercontroller = TextEditingController();
+  final TextEditingController enrollmentnumbercontroller = TextEditingController();
   bool _isButtonEnabled = false;
-  final bool _isPhoneSelected = true;
   late CloudServices _cloudServices;
 
   @override
   void initState() {
     super.initState();
-    _phonenumbercontroller.addListener(_updateButtonState);
+    enrollmentnumbercontroller.addListener(_updateButtonState);
     _cloudServices = CloudServices();
   }
 
   @override
   void dispose() {
-    _phonenumbercontroller.removeListener(_updateButtonState);
-    _phonenumbercontroller.dispose();
+    enrollmentnumbercontroller.removeListener(_updateButtonState);
+    enrollmentnumbercontroller.dispose();
     super.dispose();
   }
 
   void _updateButtonState() {
-    final textLength = _phonenumbercontroller.text.length;
+    final textLength = enrollmentnumbercontroller.text.length;
     setState(() {
       _isButtonEnabled = textLength == 14;
     });
   }
-  // TODO:Shift the login to another file
+
   Future<void> sendData() async {
-    final abc = encrypt.Key.fromSecureRandom(32);  // 32-byte AES key
-    final encrypter = encrypt.Encrypter(encrypt.AES(abc, mode: encrypt.AESMode.ecb));
+    final key = encrypt.Key.fromSecureRandom(32);
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    final phonenumber = encrypter.encrypt(_phonenumbercontroller.text);  // No IV in ECB mode
-    final device = encrypter.encrypt(androidInfo.id);
+    final encryptedEnrollNumber = encrypter.encrypt(enrollmentnumbercontroller.text, iv: iv);
+    final encryptedDeviceId = encrypter.encrypt(androidInfo.id, iv: iv);
     final Map<String, dynamic> data = {
-      "enrollment_no": phonenumber.base64,
-      "device_id": device.base64,
-      "token": '',
-      "key": abc.base64,
+      "enrollment_no": encryptedEnrollNumber.base64,
+      "device_id": encryptedDeviceId.base64,
+      "key": key.base64,
+      "iv": iv.base64,
     };
-    final res = await _cloudServices.generateToken(data);
-    if (res == true) {
-      await storeValue('Enroll-no', _phonenumbercontroller.text);
+    final userFound = await _cloudServices.findUser(data);
+    if (userFound == true) {
+      await storeValue('Enroll-no', enrollmentnumbercontroller.text);
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -66,70 +65,66 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(20.0),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 Image.asset(
-                  'lib/image/deals_dray_logo.jpg',
-                  width: 200,
-                  height: 200,
+                  'lib/image/logo.png',
+                  width: 150,
+                  height: 150,
                 ),
-                const SizedBox(height: 20),
-
-                const SizedBox(height: 30),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Glad to see you!',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      color: Colors.black,
-                    ),
+                const SizedBox(height: 40),
+                const Text(
+                  'Welcome!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 26,
+                    color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Please provide your Enrollment Number',
-                    style: TextStyle(
-                      fontSize: 13,
-                    ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Enter your Enrollment Number',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 30),
                 TextField(
-                  controller: _phonenumbercontroller,
+                  controller: enrollmentnumbercontroller,
                   decoration: InputDecoration(
-                    hintText: _isPhoneSelected ? 'Phone' : 'Email',
+                    hintText: 'Enrollment Number',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                   ),
-                  keyboardType: _isPhoneSelected
-                      ? TextInputType.text
-                      : TextInputType.emailAddress,
-                  maxLength: _isPhoneSelected ? 14 : null,
-                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.emailAddress,
+                  maxLength: 14,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isButtonEnabled ? Colors.red : Colors.red[100],
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
+                    backgroundColor: _isButtonEnabled ? Colors.blue : Colors.blue[100],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  onPressed: sendData,
-                  child: const Text('Submit', style: TextStyle(fontSize: 18)),
-                )])))));
+                  onPressed: _isButtonEnabled ? sendData : null,
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(fontSize: 18),
+                  ))])))));
   }
 }
