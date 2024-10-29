@@ -52,7 +52,7 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Generate QR Code"),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.redAccent,
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
