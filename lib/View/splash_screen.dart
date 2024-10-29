@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:deals_dray_test/View/login.dart';
-import 'package:deals_dray_test/View/homeScreen.dart';
+import 'package:deals_dray_test/View/home_screen.dart';
 import 'package:deals_dray_test/Domain/services.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -42,11 +42,9 @@ class SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.asset(
-          'lib/image/splash.jpg',
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
+        child: CircularProgressIndicator(
+          strokeWidth: 4.0, // Customize thickness if desired
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Customize color if desired
         ),
       ),
     );
