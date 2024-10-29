@@ -2,8 +2,9 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:deals_dray_test/Api/cloud_services.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:deals_dray_test/View/homeScreen.dart';
+import 'package:deals_dray_test/View/home_screen.dart';
 import 'package:deals_dray_test/Domain/services.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -75,7 +76,7 @@ class LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 40),
                 Image.asset(
-                  'lib/image/logo.png',
+                  'assets/image/icon3.png',
                   width: 150,
                   height: 150,
                 ),
@@ -114,7 +115,7 @@ class LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isButtonEnabled ? Colors.blue : Colors.blue[100],
+                    backgroundColor: _isButtonEnabled ? Colors.redAccent : Colors.redAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
