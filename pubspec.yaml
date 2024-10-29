@@ -48,17 +48,25 @@ dependencies:
   screen_protector: ^1.4.2+1
   encrypt: ^5.0.3
   shared_preferences: ^2.3.2
+  flutter_native_splash: ^2.4.2
+  flutter_lints: ^5.0.0
 
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+flutter_launcher_icons:
+    android: "launcher_icon"
+    ios: true
+    image_path: "assets/image/icon3.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -72,9 +80,14 @@ flutter:
   uses-material-design: true
 
   assets:
-     - lib/image/splash.jpg
-     - lib/image/deals_dray_logo.jpg
-     - lib/image/otpVerification.jpg
+     - assets/image/splash.jpg
+     - assets/image/deals_dray_logo.jpg
+     - assets/image/otpVerification.jpg
+     - assets/image/logo.png
+     - assets/image/icon.png
+     - assets/image/icon2.png
+     - assets/image/icon3.png
+     - assets/image/icon4.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -102,3 +115,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_native_splash:
+  image: assets/image/icon4.png
+  color: "#FFFFFF"
+  android_12:
+    image: assets/image/icon4.png
+    color: "#FFFFFF"
+
