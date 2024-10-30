@@ -3,7 +3,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:screen_protector/screen_protector.dart';
-import 'package:deals_dray_test/Domain/services.dart';
+import 'package:deals_dray_test/Domain/secure_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +15,7 @@ class HomeScreenState extends State<HomeScreen> {
   String qrData = '';
   DateTime? lastGeneratedTime;
   bool isButtonLocked = false;
+  final storage = SecureStorage();
 
   @override
   void initState() {
@@ -30,8 +31,8 @@ class HomeScreenState extends State<HomeScreen> {
   Future<void> generateQr() async{
     await ScreenProtector.preventScreenshotOn();
     DateTime currentTime = DateTime.now();
-    String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(currentTime);
-    String? rollNumber = await getValue('Enroll-no');
+    String formattedTime = DateFormat('HH:mm:ss').format(currentTime);
+    String? rollNumber = await storage.getValue('Enroll-no');
     if (rollNumber != null) {
       qrData = rollNumber + formattedTime;
     }
