@@ -1,9 +1,8 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:deals_dray_test/Api/cloud_services.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:deals_dray_test/View/home_screen.dart';
-import 'package:deals_dray_test/Domain/services.dart';
+import 'package:deals_dray_test/Domain/secure_storage.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -15,13 +14,12 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   final TextEditingController enrollmentnumbercontroller = TextEditingController();
   bool _isButtonEnabled = false;
-  late CloudServices _cloudServices;
+  final storage = SecureStorage();
 
   @override
   void initState() {
     super.initState();
     enrollmentnumbercontroller.addListener(_updateButtonState);
-    _cloudServices = CloudServices();
   }
 
   @override
@@ -45,19 +43,19 @@ class LoginScreenState extends State<LoginScreen> {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     final encryptedEnrollNumber = encrypter.encrypt(enrollmentnumbercontroller.text, iv: iv);
-    final encryptedDeviceId = encrypter.encrypt(androidInfo.id, iv: iv);
-    final Map<String, dynamic> data = {
-      "enrollment_no": encryptedEnrollNumber.base64,
-      "device_id": encryptedDeviceId.base64,
-      "key": key.base64,
-      "iv": iv.base64,
-    };
-    final userFound = await _cloudServices.findUser(data);
-    if (userFound == true) {
-      await storeValue('Enroll-no', enrollmentnumbercontroller.text);
+    encrypter.encrypt(androidInfo.id, iv: iv);
+    try {
+      await storage.storeValue('Enroll-no', encryptedEnrollNumber.base64);
+
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+    } catch(e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save credentials')),
         );
       }
     }
