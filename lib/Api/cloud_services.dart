@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:deals_dray_test/Domain/secure_storage.dart';
+import 'package:deals_dray_test/View/toast.dart';
 
 class ApiConfig {
   static const String baseUrl = String.fromEnvironment(
@@ -10,10 +11,15 @@ class ApiConfig {
 }
 
 class CloudServices {
+
   final storage = SecureStorage();
   Future<bool> findUser(Map<String, dynamic> data) async {
     bool found = false;
-    final dio = Dio(BaseOptions(baseUrl: ApiConfig.baseUrl));
+    final dio = Dio(BaseOptions(
+      baseUrl: ApiConfig.baseUrl,
+      validateStatus: (status) => status! < 500,
+    ));
+
     try {
       final response = await dio.post(
         'http://192.168.225.224:8000/register/',
@@ -25,6 +31,7 @@ class CloudServices {
           },
         ),
       );
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = response.data;
         final token = responseData['token'];
@@ -32,11 +39,16 @@ class CloudServices {
           throw Exception('Invalid token received');
         }
         await storage.storeValue('auth-token', token);
-        final result = await storage.getValue('auth-token');
-        print('ofnjnj:$result');
+        showFlutterToast('Authenticated Successfully');
+        await Future.delayed(Duration(seconds: 1));
         found = true;
+      } else if (response.statusCode == 400) {
+        showFlutterToast('Already Registered with another device id');
+      } else if (response.statusCode == 404) {
+        showFlutterToast('User Not Found');
       }
     } catch (e) {
+      showFlutterToast('An error occurred while processing the request.');
       found = false;
     }
     return found;
@@ -44,7 +56,10 @@ class CloudServices {
 
   Future<bool> validateToken(String data)async {
     bool isValid = false;
-    final dio = Dio();
+    final dio = Dio(BaseOptions(
+      baseUrl: ApiConfig.baseUrl,
+      validateStatus: (status) => status! < 500,
+    ));
     try {
       final response = await dio.post(
         'http://192.168.225.224:8000/verify-token/',
@@ -57,7 +72,15 @@ class CloudServices {
         ),
     );
       if (response.statusCode == 200) {
+        showFlutterToast('Authenticated Successfully');
+        await Future.delayed(Duration(seconds: 1));
         isValid = true;
+      }
+      if (response.statusCode == 401) {
+        showFlutterToast('TokenExpired');
+      }
+      if (response.statusCode == 400) {
+        showFlutterToast('Token Not Provided');
       }
     }
     catch(e) {
