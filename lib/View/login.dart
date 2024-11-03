@@ -1,8 +1,9 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:deals_dray_test/View/home_screen.dart';
 import 'package:deals_dray_test/Domain/secure_storage.dart';
+import 'package:deals_dray_test/Api/cloud_services.dart';
+import 'package:deals_dray_test/Domain/encryption.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController enrollmentnumbercontroller = TextEditingController();
   bool _isButtonEnabled = false;
   final storage = SecureStorage();
+  final cloudService = CloudServices();
 
   @override
   void initState() {
@@ -37,20 +39,26 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> sendData() async {
-    final key = encrypt.Key.fromSecureRandom(32);
-    final iv = encrypt.IV.fromSecureRandom(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    final encryptedEnrollNumber = encrypter.encrypt(enrollmentnumbercontroller.text, iv: iv);
-    encrypter.encrypt(androidInfo.id, iv: iv);
-    try {
-      await storage.storeValue('Enroll-no', encryptedEnrollNumber.base64);
+    final encryptedEnrollNumber = encryptData(enrollmentnumbercontroller.text);
+    final encryptedDeviceId = encryptData(androidInfo.id);
+    final Map<String, dynamic> data = {
+      "enrollment_no": encryptedEnrollNumber.base64,
+      "device_id": encryptedDeviceId.base64,
+      "key": key.base64,
+      "iv": iv.base64,
+    };
 
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+    try {
+      await storage.storeValue('Enroll-no', enrollmentnumbercontroller.text);
+      final result = await cloudService.findUser(data);
+      if (result == true) {
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
       }
     } catch(e) {
       if (mounted) {
